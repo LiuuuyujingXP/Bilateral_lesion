@@ -47,6 +47,7 @@ if ~exist(resultSavePath,'dir')
     mkdir(resultSavePath);
 end
 addpath(pwd);
+curCodePath = pwd;
 %% Extract & Save Data
 %addpath(pwd);
 
@@ -101,18 +102,19 @@ cd(resultSavePath);
 load('bmixedAllsbj.mat');
 % plotbAll(bAll)
 med_Heatmap_Group(btAll2d,plotRange,trialNearBound);
-med_LearningPlot_Individual(btAll2d,plotRange_SBS);
-med_plotLee2Vigor(btAll2d,plotRange,trialNearBound);
+med_LearningPlot_Group(btAll2d,plotRange_SBS);
+med_EffectPlot_Group(btAll2d,plotRange,trialNearBound);
 %% Code Backup
+%curCodePath = mfilename('fullpath');
+%[codeFolder,~] = fileparts(curCodePath);
+
+
 codeSavePath = fullfile(savePath,'Code');
 if ~exist(codeSavePath,'dir')
     mkdir(codeSavePath);
 end
 
-curCodePath = mfilename('fullpath');
-[codeFolder,~] = fileparts(curCodePath);
-
-cd(codeFolder);
+cd(curCodePath);
 exeCodes = dir('*.m');
 for i=1:size(exeCodes,1)
     copyfile(exeCodes(i).name,codeSavePath)

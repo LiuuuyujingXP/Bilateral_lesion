@@ -8,7 +8,7 @@ grandErr = 'sem';
 
 edges_RT = 0:0.025:0.6; % Reaction Time (only correct)
 edges_RelT = 0:0.05:3; % Realease Time (correct + late trials)
-edges_HT = 0:0.05:2.5; % Hold Time (all trials)
+edges_HT = 0:0.05:3.5; % Hold Time (all trials)
 
 smo_win = 8; % smoothdata('gaussian'), 
 prdName = ["Pre","Post"];
@@ -82,6 +82,8 @@ cGray2 = cTab20(16,:);
 cOrange = cTab20(3,:);
 cOrange2 = cTab20(4,:);
 
+colormap_diff = customcolormap(linspace(0,1,11), {'#68011d','#b5172f','#d75f4e','#f7a580','#fedbc9','#f5f9f3','#d5e2f0','#93c5dc','#4295c1','#2265ad','#062e61'});
+
 SBS = EES.SBS;
 %SBSs = grpstats(removevars(SBS,{'Subject','Date','Task'}),{'Group','Session'},{cenMethod,errMethod});
 %Period = repelem("NaN",size(SBS,1))';
@@ -94,119 +96,279 @@ SBSp = grpstats(removevars(SBS,{'Session','Date','Task'}),{'Subject','Period'},{
 %set(hf, 'name', 'Lesion effect', 'units', 'centimeters', 'position', [1 1 17 11.5],...
 %    'PaperPositionMode', 'auto','renderer','painter'); % 生科论文要求版面裁掉边距还剩，宽度15.8cm,高度24.2cm
 hf = figure(815); clf(hf,'reset');
-set(hf, 'name', 'Distribution heatmap', 'unit', 'centimeters', 'position',[1 1 12.5 13], 'paperpositionmode', 'auto' ,'renderer','painter');
+%set(hf, 'name', 'Distribution heatmap', 'unit', 'centimeters', 'position',[1 1 12.5 13], 'paperpositionmode', 'auto' ,'renderer','painter');
+set(hf, 'name', 'Distribution heatmap', 'unit', 'centimeters', 'position',[1 1 14.5 13], 'paperpositionmode', 'auto' ,'renderer','painter');
 
 size1 = [4 5];
 % ys = [1 5.2 8.8 12.5 16.3,20.2]; % yStart
 ys = [7.5 1]; % yStart
-xs1 = [1.5 7]; % xStart
-
+%xs1 = [1.5 7]; % xStart
+%xs1 = [1.5 7 13];
+%xs1 = [1.5 1.5 8];
+xs1 = [1.5 2 9];
 
 
 
 % RT include late/Release time
-ha1d = axes('unit', 'centimeters', 'position', [xs1(1) ys(1) size1], 'nextplot', 'add',...
-   'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
-    'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
-    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
+%ha1d = axes('unit', 'centimeters', 'position', [xs1(1) ys(1) size1], 'nextplot', 'add',...
+%   'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
+%    'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
+%    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
 
 % do a little upsamnpling x10 
-New_EES_trial_TBT_RelTdist = zeros(size(EES_trial.TBT.RelTdist));
-New_EES_trial_TBT_RelTdist(1:2:end-1,:) = EES_trial.Pre.RelTdist;
-New_EES_trial_TBT_RelTdist(2:2:end,:) = EES_trial.Post.RelTdist;
+%New_EES_trial_TBT_RelTdist = zeros(size(EES_trial.TBT.RelTdist));
+%New_EES_trial_TBT_RelTdist(1:2:end-1,:) = EES_trial.Pre.RelTdist;
+%New_EES_trial_TBT_RelTdist(2:2:end,:) = EES_trial.Post.RelTdist;
+%NewCenters_RelT = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
+%NewDistribution_RelT = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist', NewCenters_RelT, 'v5cubic');
+%NewDistribution_RelT = NewDistribution_RelT';
+%himageRelT = imagesc(NewCenters_RelT, [1:size(NewDistribution_RelT, 1)], NewDistribution_RelT, [0 max(NewDistribution_RelT(:))]);
+%colormap(ha1d, fake_parula);
+%colorbar('Units','centimeters','Position',[xs1(1)+size1(1)+0.04 ys(1) 0.25 size1(2)], 'FontSize', 6,'FontName','Arial');
+
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
+%end
+%for i = 1:size(EES_trial.Pre, 1)
+%    text(0.7, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
+%end
+%xlabel('RT include late (ms)','fontname','Arial', 'fontsize', 7);
+%title('Total','fontname','Arial', 'fontsize', 7);
+
+% RT include late/Release time    FP = 0.5
+%ha2d = axes('unit', 'centimeters', 'position', [xs1(2) ys(1) size1], 'nextplot', 'add',...
+%   'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
+%    'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
+%    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
+
+% do a little upsamnpling x10 
+%New_EES_trial_TBT_RelTdist_S = zeros(size(EES_trial.TBT.RelTdist_S));
+%New_EES_trial_TBT_RelTdist_S(1:2:end-1,:) = EES_trial.Pre.RelTdist_S;
+%New_EES_trial_TBT_RelTdist_S(2:2:end,:) = EES_trial.Post.RelTdist_S;
+%NewCenters_RelT_S = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
+%NewDistribution_RelT_S = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist_S', NewCenters_RelT_S, 'v5cubic');
+%NewDistribution_RelT_S = NewDistribution_RelT_S';
+%himageRelT_S = imagesc(NewCenters_RelT_S, [1:size(NewDistribution_RelT_S, 1)], NewDistribution_RelT_S, [0 max(NewDistribution_RelT_S(:))]);
+%colormap(ha2d, fake_parula);
+
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
+%end
+%for i = 1:size(EES_trial.Pre, 1)
+%    text(0.7, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
+%end
+%xlabel('RT include late (ms)','fontname','Arial', 'fontsize', 7);
+%title('FP 0.5 s','fontname','Arial', 'fontsize', 7);
+
+% RT include late/Release time    Total   sorted：median RelT
+ha2d = axes('unit', 'centimeters', 'position', [xs1(2) ys(1) size1], 'nextplot', 'add',...
+   'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
+    'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
+    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [prctile(1:size(EES_trial.TBT, 1),25) prctile(1:size(EES_trial.TBT, 1),75)], 'yticklabel', {'Post', 'Pre'}, 'ticklength', [.02 .025]);
+
+% do a little upsamnpling x10 
+[Sorted_EES_trial_Pre,idx_sorted] = sortrows(EES_trial.Pre,'RelT','descend');
+Sorted_EES_trial_Post = EES_trial.Post(idx_sorted,:);
+Sorted_EES_trial_TBT = [Sorted_EES_trial_Post;Sorted_EES_trial_Pre];
+New_EES_trial_TBT_RelTdist = Sorted_EES_trial_TBT.RelTdist;
 NewCenters_RelT = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
 NewDistribution_RelT = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist', NewCenters_RelT, 'v5cubic');
 NewDistribution_RelT = NewDistribution_RelT';
 himageRelT = imagesc(NewCenters_RelT, [1:size(NewDistribution_RelT, 1)], NewDistribution_RelT, [0 max(NewDistribution_RelT(:))]);
-colormap(ha1d, fake_parula);
+colormap(ha2d, fake_parula);
+cb2 = colorbar('Units','centimeters','Position',[xs1(2)-0.25-0.6 ys(1) 0.25 size1(2)], 'FontSize', 6,'FontName','Arial');
+cb2.Label.String = 'Probability (%)';
+cb2.Label.FontSize = 6;
+cb2.Label.FontName = 'Arial';
 
-for i = 2:size(EES_trial.Pre, 1)
-    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
 %     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
+%end
+line([0 3], prctile(1:size(EES_trial.TBT, 1),50)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+for i = 1:size(EES_trial.Pre, 1)*2
+    text(1.01, i, Sorted_EES_trial_TBT.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'k');
 end
-for i = 1:size(EES_trial.Pre, 1)
-    text(0.7, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
-end
-xlabel('RT include late (ms)','fontname','Arial');
-title('Total','fontname','Arial');
+xlabel('RT include late (ms)','fontname','Arial', 'fontsize', 7);
+title('Total','fontname','Arial', 'fontsize', 7);
 
-% RT include late/Release time    FP = 0.5
-ha2d = axes('unit', 'centimeters', 'position', [xs1(2) ys(1) size1], 'nextplot', 'add',...
+% RT include late/Release time(pre-post)
+ha5d = axes('unit', 'centimeters', 'position', [xs1(3) ys(1) size1], 'nextplot', 'add',...
    'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
     'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
-    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
+    'ylim', [0.5 size(EES_trial.Pre, 1)+0.5],'ytick', [], 'yticklabel', {}, 'ticklength', [.02 .025]);
 
 % do a little upsamnpling x10 
-New_EES_trial_TBT_RelTdist_S = zeros(size(EES_trial.TBT.RelTdist_S));
-New_EES_trial_TBT_RelTdist_S(1:2:end-1,:) = EES_trial.Pre.RelTdist_S;
-New_EES_trial_TBT_RelTdist_S(2:2:end,:) = EES_trial.Post.RelTdist_S;
-NewCenters_RelT_S = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
-NewDistribution_RelT_S = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist_S', NewCenters_RelT_S, 'v5cubic');
-NewDistribution_RelT_S = NewDistribution_RelT_S';
-himageRelT_S = imagesc(NewCenters_RelT_S, [1:size(NewDistribution_RelT_S, 1)], NewDistribution_RelT_S, [0 max(NewDistribution_RelT_S(:))]);
-colormap(ha2d, fake_parula);
+New_EES_trial_TBT_RelTdist_PreminusPost = EES_trial.Pre.RelTdist(idx_sorted,:) - EES_trial.Post.RelTdist(idx_sorted,:);
+NewCenters_RelT = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
+NewDistribution_RelT_PreminusPost = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist_PreminusPost', NewCenters_RelT, 'v5cubic');
+NewDistribution_RelT_PreminusPost = NewDistribution_RelT_PreminusPost';
+himageRelT_PreminusPost = imagesc(NewCenters_RelT, [1:size(NewDistribution_RelT_PreminusPost, 1)], NewDistribution_RelT_PreminusPost, [-max(abs(NewDistribution_RelT_PreminusPost(:))) max(abs(NewDistribution_RelT_PreminusPost(:)))]);
+colormap(ha5d, colormap_diff);
+cb5 = colorbar('Units','centimeters','Position',[xs1(3)-0.25-0.1 ys(1) 0.25 size1(2)],'FontSize', 6,'FontName','Arial');
+cb5.Label.String = 'Probability (%)';
+cb5.Label.FontSize = 6;
+cb5.Label.FontName = 'Arial';
+%cb5.Label.Units = 'centimeters';
+%cb5.Label.Position = [cb5.Position(1)+cb5.Position(3)/2, cb5.Position(2)+cb5.Position(4)];
+%cb5.Label.Rotation = 0;
+%cb5.Label.HorizontalAlignment = 'center';
 
-for i = 2:size(EES_trial.Pre, 1)
-    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
 %     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
-end
+%end
+Sorted_EES_trial_Pre_Subject = EES_trial.Pre.Subject(idx_sorted,:);
 for i = 1:size(EES_trial.Pre, 1)
-    text(0.7, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
+    text(1.01, i, Sorted_EES_trial_Pre_Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'k');
 end
-xlabel('RT include late (ms)','fontname','Arial');
-title('FP 0.5 s','fontname','Arial');
+xlabel('RT include late (ms)','fontname','Arial', 'fontsize', 7);
+title('Total(Pre - Post)','fontname','Arial', 'fontsize', 7);
 
 % RT include late/Release time    FP = 1.0
-ha3d = axes('unit', 'centimeters', 'position', [xs1(1) ys(2) size1], 'nextplot', 'add',...
-   'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
-    'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
-    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
+%ha3d = axes('unit', 'centimeters', 'position', [xs1(1) ys(2) size1], 'nextplot', 'add',...
+%   'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
+%    'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
+%    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
 
 % do a little upsamnpling x10 
-New_EES_trial_TBT_RelTdist_M = zeros(size(EES_trial.TBT.RelTdist_M));
-New_EES_trial_TBT_RelTdist_M(1:2:end-1,:) = EES_trial.Pre.RelTdist_M;
-New_EES_trial_TBT_RelTdist_M(2:2:end,:) = EES_trial.Post.RelTdist_M;
-NewCenters_RelT_M = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
-NewDistribution_RelT_M = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist_M', NewCenters_RelT_M, 'v5cubic');
-NewDistribution_RelT_M = NewDistribution_RelT_M';
-himageRelT_M = imagesc(NewCenters_RelT_M, [1:size(NewDistribution_RelT_M, 1)], NewDistribution_RelT_M, [0 max(NewDistribution_RelT_M(:))]);
-colormap(ha3d, fake_parula);
+%New_EES_trial_TBT_RelTdist_M = zeros(size(EES_trial.TBT.RelTdist_M));
+%New_EES_trial_TBT_RelTdist_M(1:2:end-1,:) = EES_trial.Pre.RelTdist_M;
+%New_EES_trial_TBT_RelTdist_M(2:2:end,:) = EES_trial.Post.RelTdist_M;
+%NewCenters_RelT_M = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
+%NewDistribution_RelT_M = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist_M', NewCenters_RelT_M, 'v5cubic');
+%NewDistribution_RelT_M = NewDistribution_RelT_M';
+%himageRelT_M = imagesc(NewCenters_RelT_M, [1:size(NewDistribution_RelT_M, 1)], NewDistribution_RelT_M, [0 max(NewDistribution_RelT_M(:))]);
+%colormap(ha3d, fake_parula);
 
-for i = 2:size(EES_trial.Pre, 1)
-    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
 %     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
-end
-for i = 1:size(EES_trial.Pre, 1)
-    text(0.7, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
-end
-xlabel('RT include late (ms)','fontname','Arial');
-title('FP 1.0 s','fontname','Arial');
+%end
+%for i = 1:size(EES_trial.Pre, 1)
+%    text(0.7, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
+%end
+%xlabel('RT include late (ms)','fontname','Arial', 'fontsize', 7);
+%title('FP 1.0 s','fontname','Arial', 'fontsize', 7);
+
+% Press duration    FP = 1.0
+%ha3d = axes('unit', 'centimeters', 'position', [xs1(1) ys(2) size1], 'nextplot', 'add',...
+%   'xlim',[xedges.edges_HT(1),3],'xtick',[xedges.edges_HT(1):1:3],...
+%    'xticklabel',cellstr(string((xedges.edges_HT(1):1:3)*1000)),'fontsize',7,'fontname','Arial',...
+%    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
+
+% do a little upsamnpling x10 
+%New_EES_trial_TBT_HTdist_M = zeros(size(EES_trial.TBT.HTdist_M));
+%New_EES_trial_TBT_HTdist_M(1:2:end-1,:) = EES_trial.Pre.HTdist_M;
+%New_EES_trial_TBT_HTdist_M(2:2:end,:) = EES_trial.Post.HTdist_M;
+%NewCenters_HT_M = linspace(xedges.edges_HT(1), xedges.edges_HT(end-1), 10*length(xedges.HT));
+%NewDistribution_HT_M = interp1(xedges.edges_HT(1:end-1), New_EES_trial_TBT_HTdist_M', NewCenters_HT_M, 'v5cubic');
+%NewDistribution_HT_M = NewDistribution_HT_M';
+%himageHT_M = imagesc(NewCenters_HT_M, [1:size(NewDistribution_HT_M, 1)], NewDistribution_HT_M, [0 max(NewDistribution_HT_M(:))]);
+%colormap(ha3d, fake_parula);
+%colorbar('Units','centimeters','Position',[xs1(1)+size1(1)+0.04 ys(2) 0.25 size1(2)], 'FontSize', 6,'FontName','Arial');
+
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
+%end
+%for i = 1:size(EES_trial.Pre, 1)
+%    text(0.7*3, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
+%    line(fplist(2)*[1 1], 0.5+[0 2]+2*(i-1), 'color', 'w', 'linewidth', 2, 'linestyle', ':');
+%end
+%xlabel('Press duration (ms)','fontname','Arial', 'fontsize', 7);
+%title('FP 1.0 s','fontname','Arial', 'fontsize', 7);
 
 % RT include late/Release time    FP = 1.5
-ha4d = axes('unit', 'centimeters', 'position', [xs1(2) ys(2) size1], 'nextplot', 'add',...
-   'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
-    'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
-    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
+%ha4d = axes('unit', 'centimeters', 'position', [xs1(2) ys(2) size1], 'nextplot', 'add',...
+%   'xlim',[xedges.edges_RelT(1),1],'xtick',[xedges.edges_RelT(1):0.25:1],...
+%    'xticklabel',cellstr(string((xedges.edges_RelT(1):0.25:1)*1000)),'fontsize',7,'fontname','Arial',...
+%    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [0.5:size(EES_trial.TBT, 1)+0.5]+0.5, 'yticklabel', {'Pre', 'Post'}, 'ticklength', [.02 .025]);
 
 % do a little upsamnpling x10 
-New_EES_trial_TBT_RelTdist_L = zeros(size(EES_trial.TBT.RelTdist_L));
-New_EES_trial_TBT_RelTdist_L(1:2:end-1,:) = EES_trial.Pre.RelTdist_L;
-New_EES_trial_TBT_RelTdist_L(2:2:end,:) = EES_trial.Post.RelTdist_L;
-NewCenters_RelT_L = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
-NewDistribution_RelT_L = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist_L', NewCenters_RelT_L, 'v5cubic');
-NewDistribution_RelT_L = NewDistribution_RelT_L';
-himageRelT_L = imagesc(NewCenters_RelT_L, [1:size(NewDistribution_RelT_L, 1)], NewDistribution_RelT_L, [0 max(NewDistribution_RelT_L(:))]);
-colormap(ha4d, fake_parula);
+%New_EES_trial_TBT_RelTdist_L = zeros(size(EES_trial.TBT.RelTdist_L));
+%New_EES_trial_TBT_RelTdist_L(1:2:end-1,:) = EES_trial.Pre.RelTdist_L;
+%New_EES_trial_TBT_RelTdist_L(2:2:end,:) = EES_trial.Post.RelTdist_L;
+%NewCenters_RelT_L = linspace(xedges.edges_RelT(1), xedges.edges_RelT(end-1), 10*length(xedges.RelT));
+%NewDistribution_RelT_L = interp1(xedges.edges_RelT(1:end-1), New_EES_trial_TBT_RelTdist_L', NewCenters_RelT_L, 'v5cubic');
+%NewDistribution_RelT_L = NewDistribution_RelT_L';
+%himageRelT_L = imagesc(NewCenters_RelT_L, [1:size(NewDistribution_RelT_L, 1)], NewDistribution_RelT_L, [0 max(NewDistribution_RelT_L(:))]);
+%colormap(ha4d, fake_parula);
 
-for i = 2:size(EES_trial.Pre, 1)
-    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
 %     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
+%end
+%for i = 1:size(EES_trial.Pre, 1)
+%    text(0.7, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
+%end
+%xlabel('RT include late (ms)','fontname','Arial', 'fontsize', 7);
+%title('FP 1.5 s','fontname','Arial', 'fontsize', 7);
+
+% Press duration    FP = 1.0   sorted：median HT
+ha4d = axes('unit', 'centimeters', 'position', [xs1(2) ys(2) size1], 'nextplot', 'add',...
+   'xlim',[xedges.edges_HT(1),3],'xtick',[xedges.edges_HT(1):1:3],...
+    'xticklabel',cellstr(string((xedges.edges_HT(1):1:3)*1000)),'fontsize',7,'fontname','Arial',...
+    'ylim', [0.5 size(EES_trial.TBT, 1)+0.5],'ytick', [prctile(1:size(EES_trial.TBT, 1),25) prctile(1:size(EES_trial.TBT, 1),75)], 'yticklabel', {'Post', 'Pre'}, 'ticklength', [.02 .025]);
+
+% do a little upsamnpling x10 
+[HT_M_Sorted_EES_trial_Pre,idx_sorted_HT_M] = sortrows(EES_trial.Pre,'HT_M','descend');
+HT_M_Sorted_EES_trial_Post = EES_trial.Post(idx_sorted_HT_M,:);
+HT_M_Sorted_EES_trial_TBT = [HT_M_Sorted_EES_trial_Post;HT_M_Sorted_EES_trial_Pre];
+New_EES_trial_TBT_HTdist_M = HT_M_Sorted_EES_trial_TBT.HTdist_M;
+NewCenters_HT = linspace(xedges.edges_HT(1), xedges.edges_HT(end-1), 10*length(xedges.HT));
+NewDistribution_HT_M = interp1(xedges.edges_HT(1:end-1), New_EES_trial_TBT_HTdist_M', NewCenters_HT, 'v5cubic');
+NewDistribution_HT_M = NewDistribution_HT_M';
+himageHT_M = imagesc(NewCenters_HT, [1:size(NewDistribution_HT_M, 1)], NewDistribution_HT_M, [0 max(NewDistribution_HT_M(:))]);
+colormap(ha4d, fake_parula);
+cb4 = colorbar('Units','centimeters','Position',[xs1(2)-0.25-0.6 ys(2) 0.25 size1(2)], 'FontSize', 6,'FontName','Arial');
+cb4.Label.String = 'Probability (%)';
+cb4.Label.FontSize = 6;
+cb4.Label.FontName = 'Arial';
+
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
+%end
+line([0 3], prctile(1:size(EES_trial.TBT, 1),50)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+for i = 1:size(EES_trial.Pre, 1)*2
+    text(1.01*3, i, HT_M_Sorted_EES_trial_TBT.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'k');
+    line(fplist(2)*[1 1], 0.5+[0 1]+1*(i-1), 'color', 'w', 'linewidth', 2, 'linestyle', ':');
 end
+xlabel('Press duration (ms)','fontname','Arial', 'fontsize', 7);
+title('FP 1.0 s','fontname','Arial', 'fontsize', 7);
+
+% Press duration(pre-post)    FP = 1.0
+ha6d = axes('unit', 'centimeters', 'position', [xs1(3) ys(2) size1], 'nextplot', 'add',...
+   'xlim',[xedges.edges_HT(1),3],'xtick',[xedges.edges_HT(1):1:3],...
+    'xticklabel',cellstr(string((xedges.edges_HT(1):1:3)*1000)),'fontsize',7,'fontname','Arial',...
+    'ylim', [0.5 size(EES_trial.Pre, 1)+0.5],'ytick', [], 'yticklabel', {}, 'ticklength', [.02 .025]);
+
+% do a little upsamnpling x10 
+New_EES_trial_TBT_HTdist_M_PreminusPost = EES_trial.Pre.HTdist_M(idx_sorted_HT_M,:) - EES_trial.Post.HTdist_M(idx_sorted_HT_M,:);
+NewCenters_HT_M = linspace(xedges.edges_HT(1), xedges.edges_HT(end-1), 10*length(xedges.HT));
+NewDistribution_HT_M_PreminusPost = interp1(xedges.edges_HT(1:end-1), New_EES_trial_TBT_HTdist_M_PreminusPost', NewCenters_HT_M, 'v5cubic');
+NewDistribution_HT_M_PreminusPost = NewDistribution_HT_M_PreminusPost';
+himageHT_M_PreminusPost = imagesc(NewCenters_HT_M, [1:size(NewDistribution_HT_M_PreminusPost, 1)], NewDistribution_HT_M_PreminusPost, [-max(abs(NewDistribution_HT_M_PreminusPost(:))) max(abs(NewDistribution_HT_M_PreminusPost(:)))]);
+colormap(ha6d, colormap_diff);
+cb6 = colorbar('Units','centimeters','Position',[xs1(3)-0.25-0.1 ys(2) 0.25 size1(2)],'FontSize', 6,'FontName','Arial');
+cb6.Label.String = 'Probability (%)';
+cb6.Label.FontSize = 6;
+cb6.Label.FontName = 'Arial';
+
+%for i = 2:size(EES_trial.Pre, 1)
+%    line([0 3], 0.5+2*(i-1)*[1 1], 'color', 'r', 'linewidth', 1, 'linestyle', '-')
+%     text(2300, 2*i-0.5, Animalnames{i}, 'fontsize', 10, 'color', 'w');
+%end
+Sorted_EES_trial_Pre_Subject = EES_trial.Pre.Subject(idx_sorted_HT_M,:);
 for i = 1:size(EES_trial.Pre, 1)
-    text(0.7, 2*i-0.5, EES_trial.Pre.Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'w');
+    text(1.01*3, i, Sorted_EES_trial_Pre_Subject{i}, 'fontsize', 7,'fontname','Arial', 'color', 'k');
+    line(fplist(2)*[1 1], 0.5+[0 1]+1*(i-1), 'color', 'k', 'linewidth', 2, 'linestyle', ':');
 end
-xlabel('RT include late (ms)','fontname','Arial');
-title('FP 1.5 s','fontname','Arial');
+xlabel('Press duration (ms)','fontname','Arial', 'fontsize', 7);
+title('FP 1.0 s(Pre-Post)','fontname','Arial', 'fontsize', 7);
 %% Save
 savename = fullfile(pwd,'MiceLesion_RelT_Heatmap');
 saveas(hf,savename,'fig');
@@ -301,22 +463,34 @@ t.t2mRW = find(tdata.RW==t.minRW,1,'first');
 switch cenMethod
     case 'mean'
         %t.HT = mean(tdata.PressDur);
-        t.HT = mean(rmoutliers(tdata.PressDur,'mean'),'omitnan');
+        %t.HT = mean(rmoutliers(tdata.PressDur,'mean'),'omitnan');
         %t.RT = mean(tdata(tdata.Type==1,:).RT);
-        RT = rmoutliers(tdata(tdata.Type==1,:).RT,'mean');
-        t.RT = mean(RT(RT>=0.1),'omitnan');
+        %RT = rmoutliers(tdata(tdata.Type==1,:).RT,'mean');
+        %t.RT = mean(RT(RT>=0.1),'omitnan');
+        [HT_rmvd, HT_idxrmv] = rmoutliers_custome(tdata.PressDur);
+        t.HT = mean(HT_rmvd,'omitnan');
+        [RT_rmvd, RT_idxrmv] = rmoutliers_custome(tdata(tdata.Type==1,:).RT);
+        t.RT = mean(RT_rmvd(RT_rmvd>=0.1),'omitnan');
     case 'median'
         %t.HT = median(tdata.PressDur);
         %t.RT = median(tdata(tdata.Type==1,:).RT);
-        t.HT = median(rmoutliers(tdata.PressDur,'median'),'omitnan');
-        RT = rmoutliers(tdata(tdata.Type==1,:).RT,'median');
-        t.RT = median(RT(RT>=0.1),'omitnan');
+        %t.HT = median(rmoutliers(tdata.PressDur,'median'),'omitnan');
+        %RT = rmoutliers(tdata(tdata.Type==1,:).RT,'median');
+        %t.RT = median(RT(RT>=0.1),'omitnan');
+        [HT_rmvd, HT_idxrmv] = rmoutliers_custome(tdata.PressDur);
+        t.HT = median(HT_rmvd,'omitnan');
+        [RT_rmvd, RT_idxrmv] = rmoutliers_custome(tdata(tdata.Type==1,:).RT);
+        t.RT = median(RT_rmvd(RT_rmvd>=0.1),'omitnan');
     case 'geomean'
         %t.HT = geomean(tdata.PressDur);
         %t.RT = geomean(tdata(tdata.Type==1 & tdata.RT>0,:).RT);
-        t.HT = geomean(rmoutliers(tdata.PressDur,'quartiles'),'omitnan');
-        RT = rmoutliers(tdata(tdata.Type==1 & tdata.RT>0,:).RT,'quartiles');
-        t.RT = geomean(RT(RT>=0.1),'omitnan');
+        %t.HT = geomean(rmoutliers(tdata.PressDur,'quartiles'),'omitnan');
+        %RT = rmoutliers(tdata(tdata.Type==1 & tdata.RT>0,:).RT,'quartiles');
+        %t.RT = geomean(RT(RT>=0.1),'omitnan');
+        [HT_rmvd, HT_idxrmv] = rmoutliers_custome(tdata.PressDur);
+        t.HT = geomean(HT_rmvd,'omitnan');
+        [RT_rmvd, RT_idxrmv] = rmoutliers_custome(tdata(tdata.Type==1 & tdata.RT>0,:).RT);
+        t.RT = geomean(RT_rmvd(RT_rmvd>=0.1),'omitnan');
 end
 outT = [outT;struct2table(t)];
 
@@ -384,10 +558,14 @@ for i=1:length(sbjlist)
 %    t.RT_S = mean(tdata.RT(idxCor&idxFPS));
 %    t.RT_M = mean(tdata.RT(idxCor&idxFPM));
 %    t.RT_L = mean(tdata.RT(idxCor&idxFPL));
-    RT = rmoutliers(tdata.RT(idxCor),cenMethod);
-    RT_S = rmoutliers(tdata.RT(idxCor&idxFPS),cenMethod);
-    RT_M = rmoutliers(tdata.RT(idxCor&idxFPM),cenMethod);
-    RT_L = rmoutliers(tdata.RT(idxCor&idxFPL),cenMethod);
+    %RT = rmoutliers(tdata.RT(idxCor),cenMethod);
+    %RT_S = rmoutliers(tdata.RT(idxCor&idxFPS),cenMethod);
+    %RT_M = rmoutliers(tdata.RT(idxCor&idxFPM),cenMethod);
+    %RT_L = rmoutliers(tdata.RT(idxCor&idxFPL),cenMethod);
+    [RT, RT_idxrmv] = rmoutliers_custome(tdata.RT(idxCor));
+    [RT_S, RT_idxrmv_S] = rmoutliers_custome(tdata.RT(idxCor&idxFPS));
+    [RT_M, RT_idxrmv_M] = rmoutliers_custome(tdata.RT(idxCor&idxFPM));
+    [RT_L, RT_idxrmv_L] = rmoutliers_custome(tdata.RT(idxCor&idxFPL));
     RT = RT(RT>=0.1);
     RT_S = RT_S(RT_S>=0.1);
     RT_M = RT_M(RT_M>=0.1);
@@ -401,10 +579,14 @@ for i=1:length(sbjlist)
     t.RT_M = eval(cenMethod+"(RT_M,'omitnan')");
     t.RT_L = eval(cenMethod+"(RT_L,'omitnan')");
 
-    RelT = rmoutliers(tdata.RT(idxCor|idxLate),cenMethod);
-    RelT_S = rmoutliers(tdata.RT((idxCor|idxLate)&idxFPS),cenMethod);
-    RelT_M = rmoutliers(tdata.RT((idxCor|idxLate)&idxFPM),cenMethod);
-    RelT_L = rmoutliers(tdata.RT((idxCor|idxLate)&idxFPL),cenMethod);
+    %RelT = rmoutliers(tdata.RT(idxCor|idxLate),cenMethod);
+    %RelT_S = rmoutliers(tdata.RT((idxCor|idxLate)&idxFPS),cenMethod);
+    %RelT_M = rmoutliers(tdata.RT((idxCor|idxLate)&idxFPM),cenMethod);
+    %RelT_L = rmoutliers(tdata.RT((idxCor|idxLate)&idxFPL),cenMethod);
+    [RelT, RelT_idxrmv] = rmoutliers_custome(tdata.RT(idxCor|idxLate));
+    [RelT_S, RelT_idxrmv_S] = rmoutliers_custome(tdata.RT((idxCor|idxLate)&idxFPS));
+    [RelT_M, RelT_idxrmv_M] = rmoutliers_custome(tdata.RT((idxCor|idxLate)&idxFPM));
+    [RelT_L, RelT_idxrmv_L] = rmoutliers_custome(tdata.RT((idxCor|idxLate)&idxFPL));
     RelT = RelT(RelT>=0.1);
     RelT_S = RelT_S(RelT_S>=0.1);
     RelT_M = RelT_M(RelT_M>=0.1);
@@ -417,6 +599,19 @@ for i=1:length(sbjlist)
     t.RelT_S = eval(cenMethod+"(RelT_S,'omitnan')");
     t.RelT_M = eval(cenMethod+"(RelT_M,'omitnan')");
     t.RelT_L = eval(cenMethod+"(RelT_L,'omitnan')");
+
+    [HT, HT_idxrmv] = rmoutliers_custome(tdata.PressDur);
+    [HT_S, HT_idxrmv_S] = rmoutliers_custome(tdata.PressDur(idxFPS));
+    [HT_M, HT_idxrmv_M] = rmoutliers_custome(tdata.PressDur(idxFPM));
+    [HT_L, HT_idxrmv_L] = rmoutliers_custome(tdata.PressDur(idxFPL));
+    t.HT = eval(cenMethod+"(HT,'omitnan')");
+    HT_CI = eval("bootci(nboot,{@"+cenMethod+",HT},'alpha',0.05)'");
+    t.HT_CI = [t.HT-HT_CI(1), HT_CI(2)-t.HT];
+    HT_SE = eval("std(bootstrp(nboot,@"+cenMethod+",HT))");
+    t.HT_SE = [HT_SE,HT_SE];
+    t.HT_S = eval(cenMethod+"(HT_S,'omitnan')");
+    t.HT_M = eval(cenMethod+"(HT_M,'omitnan')");
+    t.HT_L = eval(cenMethod+"(HT_L,'omitnan')");
 %         t.RT_3FPs = [mean(tdata.RT(idxCor&idxFPS)),mean(tdata.RT(idxCor&idxFPM)),mean(tdata.RT(idxCor&idxFPL))];
 %    edges_RT = 0:0.05:0.6;
 %    t.RTdist_S = smooth(histcounts(tdata.RT(idxCor&idxFPS),edges_RT,'Normalization','probability'),3)';
@@ -504,4 +699,13 @@ function symbol = pValue2symbol(p)
     else
         symbol = '***';
     end
+end
+
+function [dataout,indrmv] = rmoutliers_custome(datain)
+[data2575] = prctile(datain, [25, 75]);
+interq = data2575(2) - data2575(1);
+c=5;
+indrmv = find(datain>data2575(2)+interq*c | datain<data2575(1)-interq*c);
+dataout = datain;
+dataout(indrmv) = [];
 end
