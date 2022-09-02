@@ -46,14 +46,19 @@ resultSavePath = fullfile(savePath,'Result');
 if ~exist(resultSavePath,'dir')
     mkdir(resultSavePath);
 end
-%% Extract & Save Data
 addpath(pwd);
+curCodePath = pwd;
+%% Extract & Save Data
+%addpath(pwd);
 
 btAll2d = {};
 global lesionBoundary;
 lesionBoundary = NaN(length(tarPath),1);
 sessNearBound = 5;
+sessNearBound_pre = 5;
+sessNearBound_post = 10;
 plotRange = cell(length(tarPath),1);
+plotRange_SBS = cell(length(tarPath),1);
 trialNearBound_LP = 50;
 trialNearBound = 500;
 
@@ -85,28 +90,31 @@ for ipath=1:length(tarPath)
     sessBeforeles=find(caldays(caldiff(t))==Maxtimeduration,1,'last');
     lesionBoundary(ipath,1) = str2double(Dateincludeyear{sessBeforeles}); %session before lession
     plotRange(ipath,1) = {sessBeforeles-sessNearBound+1:sessBeforeles+sessNearBound};
+    plotRange_SBS(ipath,1) = {sessBeforeles-sessNearBound_pre+1:sessBeforeles+sessNearBound_post};
     
     btAll2d(end+1,1:length(btAll)) = btAll;
 end
 
-save(fullfile(resultSavePath,'bmixedAllsbj.mat'),'btAll2d','plotRange','trialNearBound','lesionBoundary');
+save(fullfile(resultSavePath,'bmixedAllsbj.mat'),'btAll2d','plotRange','plotRange_SBS','trialNearBound','lesionBoundary');
 close all;
 %% Analysis & Plot
 cd(resultSavePath);
 load('bmixedAllsbj.mat');
 % plotbAll(bAll)
-%med_LearningPlot_Individual(bAll,btAll,trialNearBound_LP);
-med_plotLee2Vigor(btAll2d,plotRange,trialNearBound);
+med_Heatmap_Group(btAll2d,plotRange,trialNearBound);
+med_LearningPlot_Group(btAll2d,plotRange_SBS);
+med_EffectPlot_Group(btAll2d,plotRange,trialNearBound);
 %% Code Backup
+%curCodePath = mfilename('fullpath');
+%[codeFolder,~] = fileparts(curCodePath);
+
+
 codeSavePath = fullfile(savePath,'Code');
 if ~exist(codeSavePath,'dir')
     mkdir(codeSavePath);
 end
 
-curCodePath = mfilename('fullpath');
-[codeFolder,~] = fileparts(curCodePath);
-
-cd(codeFolder);
+cd(curCodePath);
 exeCodes = dir('*.m');
 for i=1:size(exeCodes,1)
     copyfile(exeCodes(i).name,codeSavePath)
